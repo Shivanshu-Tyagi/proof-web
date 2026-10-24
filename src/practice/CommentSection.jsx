@@ -1,7 +1,7 @@
 import React from "react";
 
-function HOC(Effects) {
-   return function Enhanced(params) {
+function HOC() {
+   return function Enhanced() {
     const [count,setCount]=React.useState(0);
 
     const increment = () => setCount(count + 1);

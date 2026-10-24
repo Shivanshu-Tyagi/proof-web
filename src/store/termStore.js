@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const useTermStore = create((set, get) => ({
+const useTermStore = create((set) => ({
   terms: [],
   currentTerm: null,
   isLoading: false,

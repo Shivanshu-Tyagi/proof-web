@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 function ComponentComm() {
     const [data,setData] = useState([]);
-    const [loading,setloading] = useState(false);
+    const [,setloading] = useState(false);
     useEffect(()=>{
        const fetchData = async()=>{
        

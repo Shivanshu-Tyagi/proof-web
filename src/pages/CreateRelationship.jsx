@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Heart, ArrowLeft, Users } from 'lucide-react';
 import { toast } from 'react-toastify';
 import useRelationshipStore from '../store/relationshipStore';
-import useAuthStore from '../store/authStore';
 
 const relationshipTypes = [
   { value: 'romantic', label: 'Romantic' },
@@ -17,7 +16,6 @@ const relationshipTypes = [
 const CreateRelationship = () => {
   const navigate = useNavigate();
   const createRelationship = useRelationshipStore((state) => state.createRelationship);
-  const { user } = useAuthStore();
   const [formData, setFormData] = useState({
     title: '',
     type: '',

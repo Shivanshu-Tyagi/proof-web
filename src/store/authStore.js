@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Configure axios defaults
 axios.defaults.baseURL = API_URL;
@@ -130,6 +130,68 @@ const useAuthStore = create(
           const errorMessage = error.response?.data?.message || 'Profile update failed';
           set({ error: errorMessage, isLoading: false });
           return { success: false, error: error.response?.data || { message: errorMessage } };
+        }
+      },
+
+      forgotPassword: async (email) => {
+        try {
+          await axios.post('/auth/forgot-password', { email });
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: error.response?.data?.message || 'Could not send reset link' };
+        }
+      },
+
+      resetPassword: async (token, password) => {
+        try {
+          const response = await axios.post(`/auth/reset-password/${token}`, { password });
+          const { token: authToken, user } = response.data;
+          set({ user, token: authToken });
+          get().setAuthToken(authToken);
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: error.response?.data?.message || 'Could not reset password' };
+        }
+      },
+
+      changePassword: async (currentPassword, newPassword) => {
+        try {
+          const response = await axios.post('/auth/change-password', { currentPassword, newPassword });
+          set({ token: response.data.token });
+          get().setAuthToken(response.data.token);
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: error.response?.data?.message || 'Could not change password' };
+        }
+      },
+
+      // Download everything we hold about this account as a JSON file
+      exportData: async () => {
+        try {
+          const response = await axios.get('/auth/export', { responseType: 'blob' });
+          const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `proof-data-${new Date().toISOString().slice(0, 10)}.json`;
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          window.URL.revokeObjectURL(url);
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: error.response?.status === 429 ? 'Too many attempts. Try again later.' : 'Could not prepare your data' };
+        }
+      },
+
+      // Permanently delete the account. The server needs the password again.
+      deleteAccount: async (password) => {
+        try {
+          await axios.post('/auth/delete-account', { password });
+          set({ user: null, token: null, error: null });
+          get().setAuthToken(null);
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: error.response?.data?.message || 'Could not delete your account' };
         }
       },
 

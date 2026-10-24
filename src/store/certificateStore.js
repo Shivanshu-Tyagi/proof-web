@@ -54,7 +54,7 @@ const useCertificateStore = create((set) => ({
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `certificate-${id}.pdf`); // Or appropriate file type
+      link.setAttribute('download', `certificate-${id}.png`);
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -79,6 +79,20 @@ const useCertificateStore = create((set) => ({
       const errorMessage = error.response?.data?.message || 'Failed to share certificate';
       set({ error: errorMessage, isLoading: false });
       return { success: false, error: errorMessage };
+    }
+  },
+
+  // Switch the public verify link on or off
+  setCertificateSharing: async (id, isPublic) => {
+    try {
+      await axios.put(`/certificates/${id}/sharing`, { isPublic });
+      set((state) => ({
+        certificate: state.certificate?._id === id ? { ...state.certificate, sharing: { ...state.certificate.sharing, isPublic } } : state.certificate,
+        certificates: state.certificates.map((c) => (c._id === id ? { ...c, sharing: { ...c.sharing, isPublic } } : c)),
+      }));
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || 'Failed to update the verify link' };
     }
   },
 

@@ -16,7 +16,7 @@ import {
 import { toast } from 'react-toastify';
 import useAuthStore from '../store/authStore';
 
-const Profile = () => {
+const Profile = ({ embedded = false }) => {
   const { user, updateProfile, isLoading } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -164,17 +164,14 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 animate-fade-in">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Profile
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400 text-base">
-            Manage your personal information and preferences
-          </p>
-        </div>
+    <div className={embedded ? 'animate-fade-in' : 'min-h-screen bg-gray-100 dark:bg-gray-900 animate-fade-in'}>
+      <div className={embedded ? '' : 'max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8'}>
+        {!embedded && (
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400 text-base">Manage your personal information and preferences</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 {/*            
@@ -418,117 +415,6 @@ const Profile = () => {
                   )}
                 </div>
 
-                {/* Preferences */}
-                {isEditing && (
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                      Preferences
-                    </h4>
-                    
-                    {/* Theme */}
-                    <div className="mb-6">
-                      <label htmlFor="theme" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Theme
-                      </label>
-                      <select
-                        id="theme"
-                        name="preferences.theme"
-                        value={formData.preferences.theme}
-                        onChange={handleChange}
-                        className="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-secondary-500 focus:border-secondary-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
-                      >
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="system">System</option>
-                      </select>
-                    </div>
-
-                    {/* History Privacy */}
-                    <div className="mb-6">
-                      <label htmlFor="historyPrivacy" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        History Privacy
-                      </label>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        Control who can view your relationship history.
-                      </p>
-                      <select
-                        id="historyPrivacy"
-                        name="historyPrivacy"
-                        value={formData.historyPrivacy}
-                        onChange={handleChange}
-                        className="block w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-secondary-500 focus:border-secondary-500 dark:bg-gray-700 dark:text-white transition-colors duration-200"
-                      >
-                        <option value="private">Private (No one can view)</option>
-                        <option value="granted_only">Granted Only (Only users you grant access to)</option>
-                        <option value="public">Public (Anyone can view)</option>
-                      </select>
-                    </div>
-
-                    {/* Notifications */}
-                    <div>
-                      <h5 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                        Notifications
-                      </h5>
-                      <div className="space-y-3">
-                        <div className="flex items-center">
-                          <input
-                            id="email-notifications"
-                            name="notifications.email"
-                            type="checkbox"
-                            checked={formData.preferences.notifications.email}
-                            onChange={handleChange}
-                            className="h-5 w-5 text-secondary-600 focus:ring-secondary-500 border-gray-300 dark:border-gray-600 rounded-md transition-colors duration-200"
-                          />
-                          <label htmlFor="email-notifications" className="ml-2 block text-base text-gray-700 dark:text-gray-300">
-                            Email notifications
-                          </label>
-                        </div>
-                        
-                        <div className="flex items-center">
-                          <input
-                            id="push-notifications"
-                            name="notifications.push"
-                            type="checkbox"
-                            checked={formData.preferences.notifications.push}
-                            onChange={handleChange}
-                            className="h-5 w-5 text-secondary-600 focus:ring-secondary-500 border-gray-300 dark:border-gray-600 rounded-md transition-colors duration-200"
-                          />
-                          <label htmlFor="push-notifications" className="ml-2 block text-base text-gray-700 dark:text-gray-300">
-                            Push notifications
-                          </label>
-                        </div>
-                        
-                        <div className="flex items-center">
-                          <input
-                            id="milestone-notifications"
-                            name="notifications.milestones"
-                            type="checkbox"
-                            checked={formData.preferences.notifications.milestones}
-                            onChange={handleChange}
-                            className="h-5 w-5 text-secondary-600 focus:ring-secondary-500 border-gray-300 dark:border-gray-600 rounded-md transition-colors duration-200"
-                          />
-                          <label htmlFor="milestone-notifications" className="ml-2 block text-base text-gray-700 dark:text-gray-300">
-                            Milestone notifications
-                          </label>
-                        </div>
-                        
-                        <div className="flex items-center">
-                          <input
-                            id="activity-notifications"
-                            name="notifications.activities"
-                            type="checkbox"
-                            checked={formData.preferences.notifications.activities}
-                            onChange={handleChange}
-                            className="h-5 w-5 text-secondary-600 focus:ring-secondary-500 border-gray-300 dark:border-gray-600 rounded-md transition-colors duration-200"
-                          />
-                          <label htmlFor="activity-notifications" className="ml-2 block text-base text-gray-700 dark:text-gray-300">
-                            Activity notifications
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </form>
             </div>
           </div>

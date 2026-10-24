@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const useMilestoneStore = create((set, get) => ({
+const useMilestoneStore = create((set) => ({
   milestones: [],
   currentMilestone: null,
   isLoading: false,

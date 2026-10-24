@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const useNotificationStore = create((set, get) => ({
+const useNotificationStore = create((set) => ({
   notifications: [],
   unreadCount: 0,
   isLoading: false,
@@ -32,7 +32,7 @@ const useNotificationStore = create((set, get) => ({
       
       set({ unreadCount });
       return { success: true, unreadCount };
-    } catch (error) {
+    } catch {
       return { success: false, error: 'Failed to fetch unread count' };
     }
   },
@@ -59,7 +59,7 @@ const useNotificationStore = create((set, get) => ({
   // Mark all as read
   markAllAsRead: async () => {
     try {
-      const response = await axios.put('/notifications/mark-all-read');
+      await axios.put('/notifications/mark-all-read');
       
       set(state => ({
         notifications: state.notifications.map(n => ({ ...n, status: 'read', readAt: new Date() })),

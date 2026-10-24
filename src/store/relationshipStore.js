@@ -47,22 +47,16 @@ const useRelationshipStore = create((set, get) => ({
   // Get single relationship
 // In your relationshipStore.js
 getRelationship: async (id) => {
-  console.log('Fetching relationship with ID:', id);
-  set({ isLoading: true, error: null });
+  const existing = get().relationships.find(r => r._id === id);
+  // Show the cached copy immediately, but always refresh from the server:
+  // the cache goes stale after history, type-change and breakup actions
+  if (existing) {
+    set({ currentRelationship: existing, error: null });
+  } else {
+    set({ isLoading: true, error: null });
+  }
   try {
-    // Check if we have it in the relationships array first
-    const existing = get().relationships.find(r => r._id === id);
-    console.log(existing,"==");
-    if (existing) {
-      console.log('Found in existing relationships, using that');
-      set({ currentRelationship: existing, isLoading: false });
-      return { success: true, relationship: existing };
-    }
-
-    // Otherwise fetch from server
-    console.log('Not found in store, fetching from server');
     const response = await axios.get(`/relationships/${id}`);
-    console.log('Server response:', response.data);
     const { relationship } = response.data;
     
     set(state => ({
@@ -106,37 +100,45 @@ getRelationship: async (id) => {
   },
 
   // Request history access
-  // requestHistoryAccess: async (id) => {
-  //   try {
-  //     await axios.post(`/relationships/${id}/request-history-access`);
-  //     return { success: true };
-  //   } catch (error) {
-  //     const errorMessage = error.response?.data?.message || 'Failed to request history access';
-  //     return { success: false, error: errorMessage };
-  //   }
-  // },
+  requestHistoryAccess: async (id) => {
+    try {
+      await axios.post(`/relationships/${id}/request-history-access`);
+      return { success: true };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to request history access';
+      return { success: false, error: errorMessage };
+    }
+  },
 
-  // Grant history access
-  // grantHistoryAccess: async (id, granted = true) => {
-  //   try {
-  //     await axios.post(`/relationships/${id}/grant-history-access`, { granted });
-  //     // Optionally, update the specific relationship's historyAccess status in the store
-  //     set(state => ({
-  //       relationships: state.relationships.map(r => 
-  //         r._id === id ? { ...r, historyAccess: { ...r.historyAccess, granted: granted } } : r
-  //       ),
-  //       currentRelationship: state.currentRelationship?._id === id 
-  //         ? { ...state.currentRelationship, historyAccess: { ...state.currentRelationship.historyAccess, granted: granted } } 
-  //         : state.currentRelationship,
-  //       isLoading: false
-  //     }));
-  //     return { success: true };
-  //   } catch (error) {
-  //     const errorMessage = error.response?.data?.message || 'Failed to grant history access';
-  //     set({ error: errorMessage, isLoading: false });
-  //     return { success: false, error: errorMessage };
-  //   }
-  // },
+  // Grant or deny history access
+  grantHistoryAccess: async (id, granted = true, durationDays = null) => {
+    try {
+      await axios.post(`/relationships/${id}/grant-history-access`, { granted, durationDays });
+      return { success: true };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to update history access';
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  // Private note: only its author can ever read it
+  getPrivateNote: async (id) => {
+    try {
+      const response = await axios.get(`/relationships/${id}/note`);
+      return { success: true, note: response.data.note };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || 'Failed to load the note' };
+    }
+  },
+
+  savePrivateNote: async (id, text) => {
+    try {
+      const response = await axios.put(`/relationships/${id}/note`, { text });
+      return { success: true, note: response.data.note };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || 'Failed to save the note' };
+    }
+  },
 
   // Request breakup
   requestBreakup: async (id) => {
@@ -179,6 +181,29 @@ getRelationship: async (id) => {
       return { success: true, relationship };
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to confirm breakup';
+      set({ error: errorMessage, isLoading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  // Take back a breakup request before the other person confirms
+  cancelBreakupRequest: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`/relationships/${id}/cancel-breakup-request`);
+      const { relationship } = response.data;
+
+      set(state => ({
+        relationships: state.relationships.map(r =>
+          r._id === id ? relationship : r
+        ),
+        currentRelationship: state.currentRelationship?._id === id ? relationship : state.currentRelationship,
+        isLoading: false
+      }));
+
+      return { success: true, relationship };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to cancel breakup request';
       set({ error: errorMessage, isLoading: false });
       return { success: false, error: errorMessage };
     }

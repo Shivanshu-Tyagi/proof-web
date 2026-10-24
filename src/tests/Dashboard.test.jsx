@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
 import useAuthStore from '../store/authStore';
@@ -75,14 +75,14 @@ describe('Dashboard', () => {
     vi.clearAllMocks();
   });
 
-  it('should display the user's registration ID', () => {
+  it("should display the user's registration ID", () => {
     render(
       <Router>
         <Dashboard />
       </Router>
     );
 
-    expect(screen.getByText(/Your Registration ID:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your Registration ID/i)).toBeInTheDocument();
     expect(screen.getByText(mockUser.registrationId)).toBeInTheDocument();
   });
 

@@ -1,53 +1,47 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import Navbar from './components/Layout/Navbar';
-import Footer from './components/Layout/Footer';
+import AppShell from './components/Layout/AppShell';
 import ProtectedRoute from './components/ProtectedRoute';
-
-// Pages
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
-import Relationships from './pages/Relationships';
-import RelationshipDetail from './pages/RelationshipDetail';
-import RelationshipSummary from './pages/RelationshipSummary';
-import InviteRelationship from './pages/InviteRelationship';
-import Terms from './pages/Terms';
-import Milestones from './pages/Milestones';
-import Activities from './pages/Activities';
-import Certificates from './pages/Certificates';
-import CertificateDetail from './pages/CertificateDetail';
-import Certificate2 from './pages/Certificate2'; // New import for Certificate2
-import CreateMilestone from './pages/CreateMilestone';
-import CreateActivity from './pages/CreateActivity';
-import CreateTerm from './pages/CreateTerm';
-import MilestoneDetail from './pages/MilestoneDetail';
-import ActivityDetail from './pages/ActivityDetail';
-import TermDetail from './pages/TermDetail';
-import Notifications from './pages/Notifications';
-import Profile from './pages/Profile';
-import RelationshipCertificateDisplay from './pages/RelationshipCertificateDisplay';
-import FindSomeone from './pages/FindSomeone'; // Import the new FindSomeone component
-import PrivacyPolicy from './pages/PrivacyPolicy'; // New import
-import TermsAndConditions from './pages/TermsAndConditions'; // New import
-import ContactUs from './pages/ContactUs'; // New import
-
-// Stores
 import useAuthStore from './store/authStore';
 import useThemeStore from './store/themeStore';
-import { useEffect } from 'react';
-import RelationshipSettings from './pages/RelationshipSettings';
-// import History from './pages/History'; // Correctly import the new History component
-import Counter from './practice/Counter';
-import EventHandling from './practice/EventHndling';
-import Condentional from './practice/Condentional';
-import ListRendering from './practice/ListRendering';
-import FormHandling from './practice/FormHandling';
-import Parent from "./practice/ChilttoParent"; 
-import Apin from './practice/CommentSection';
-import Optimize from './practice/Optimize';
+import { lazy, Suspense, useEffect } from 'react';
+import ErrorBoundary from './components/ErrorBoundary';
+
+// Pages load on demand to keep the first download small
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const VerifyCertificate = lazy(() => import('./pages/VerifyCertificate'));
+const Login = lazy(() => import('./pages/Login'));
+const Signup = lazy(() => import('./pages/Signup'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Relationships = lazy(() => import('./pages/Relationships'));
+const RelationshipDetail = lazy(() => import('./pages/RelationshipDetail'));
+const InviteRelationship = lazy(() => import('./pages/InviteRelationship'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Milestones = lazy(() => import('./pages/Milestones'));
+const Activities = lazy(() => import('./pages/Activities'));
+const Certificates = lazy(() => import('./pages/Certificates'));
+const CreateMilestone = lazy(() => import('./pages/CreateMilestone'));
+const CreateActivity = lazy(() => import('./pages/CreateActivity'));
+const CreateTerm = lazy(() => import('./pages/CreateTerm'));
+const MilestoneDetail = lazy(() => import('./pages/MilestoneDetail'));
+const ActivityDetail = lazy(() => import('./pages/ActivityDetail'));
+const TermDetail = lazy(() => import('./pages/TermDetail'));
+const Notifications = lazy(() => import('./pages/Notifications'));
+const Account = lazy(() => import('./pages/Account'));
+const RelationshipCertificateDisplay = lazy(() => import('./pages/RelationshipCertificateDisplay'));
+const FindSomeone = lazy(() => import('./pages/FindSomeone'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'));
+const ContactUs = lazy(() => import('./pages/ContactUs'));
+const RelationshipSettings = lazy(() => import('./pages/RelationshipSettings'));
+const History = lazy(() => import('./pages/History'));
+const Messages = lazy(() => import('./pages/Messages'));
+const Landing = lazy(() => import('./pages/Landing'));
+
+const RedirectTo = ({ to }) => <Navigate to={to(useParams())} replace />;
 
 function App() {
   const { isAuthenticated, getMe } = useAuthStore();
@@ -63,23 +57,34 @@ function App() {
   }, [isAuthenticated, getMe, setInitialTheme]);
 
   return (
-    // <Optimize/>
+//  <ListRendering/>
     <Router>
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
-        <Navbar />
-        
-        <main className="flex-1">
+      <div className="min-h-screen bg-white dark:bg-gray-900">
+        <AppShell>
+        <main>
+          <ErrorBoundary>
+          <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center text-gray-500 dark:text-gray-400">Loading…</div>}>
           <Routes>
             {/* Public routes */}
             <Route 
               path="/login" 
               element={!isAuthenticated() ? <Login /> : <Navigate to="/dashboard" replace />} 
             />
+            <Route
+              path="/forgot-password"
+              element={!isAuthenticated() ? <ForgotPassword /> : <Navigate to="/dashboard" replace />}
+            />
+            <Route
+              path="/reset-password/:token"
+              element={<ResetPassword />}
+            />
             <Route 
               path="/signup" 
               element={!isAuthenticated() ? <Signup /> : <Navigate to="/dashboard" replace />} 
             />
             
+            <Route path="/verify/:number" element={<VerifyCertificate />} />
+
             {/* Protected routes */}
             <Route path="/dashboard" element={
               <ProtectedRoute>
@@ -87,6 +92,18 @@ function App() {
               </ProtectedRoute>
             } />
             
+            <Route path="/messages" element={
+              <ProtectedRoute>
+                <Messages />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/messages/:id" element={
+              <ProtectedRoute>
+                <Messages />
+              </ProtectedRoute>
+            } />
+
             <Route path="/relationships" element={
               <ProtectedRoute>
                 <Relationships />
@@ -104,11 +121,8 @@ function App() {
                 <RelationshipDetail />
               </ProtectedRoute>
             } />
-            <Route path="/relationships/:id/summary" element={
-              <ProtectedRoute>
-                <RelationshipSummary />
-              </ProtectedRoute>
-            } />
+            {/* Retired pages keep working by forwarding to their replacements */}
+            <Route path="/relationships/:id/summary" element={<RedirectTo to={(p) => `/relationships/${p.id}`} />} />
           
             
             <Route path="/relationships/:id/settings" element={
@@ -117,11 +131,11 @@ function App() {
               </ProtectedRoute>
             } />
             
-            {/* <Route path="/history/:userId" element={ */}
-            {/*   <ProtectedRoute> */}
-            {/*     <History /> */}
-            {/*   </ProtectedRoute> */}
-            {/* } /> */}
+            <Route path="/history/:userId" element={
+              <ProtectedRoute>
+                <History />
+              </ProtectedRoute>
+            } />
             
             {/* <Route path="/history-search" element={  */}
             {/*   <ProtectedRoute> */}
@@ -189,18 +203,9 @@ function App() {
               </ProtectedRoute>
             } />
             
-            <Route path="/certificates/:id" element={
-              <ProtectedRoute>
-                <CertificateDetail />
-              </ProtectedRoute>
-            } />
+            <Route path="/certificates/:id" element={<RedirectTo to={(p) => `/certificates/${p.id}/display`} />} />
             
-            {/* New Certificate2 Route */}
-            <Route path="/certificate2" element={
-              <ProtectedRoute>
-                <Certificate2 />
-              </ProtectedRoute>
-            } />
+            <Route path="/certificate2" element={<Navigate to="/certificates" replace />} />
             
             <Route path="/certificates/:id/display" element={
               <ProtectedRoute>
@@ -216,7 +221,7 @@ function App() {
             
             <Route path="/profile" element={
               <ProtectedRoute>
-                <Profile />
+                <Account />
               </ProtectedRoute>
             } />
             
@@ -242,25 +247,17 @@ function App() {
             <Route 
               path="/" 
               element={
-                <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />
+                isAuthenticated() ? <Navigate to="/dashboard" replace /> : <Landing />
               } 
             />
             
-            {/* 404 fallback */}
-            <Route path="*" element={
-              <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-                <div className="text-center">
-                  <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">404</h1>
-                  <p className="text-gray-600 dark:text-gray-400 mb-8">Page not found</p>
-                  <Navigate to={isAuthenticated() ? "/dashboard" : "/login"} replace />
-                </div>
-              </div>
-            } />
+            <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
+          </ErrorBoundary>
         </main>
-        
-        <Footer />
-        
+        </AppShell>
+
         <ToastContainer
           position="top-right"
           autoClose={5000}

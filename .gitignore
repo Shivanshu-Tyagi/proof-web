@@ -24,3 +24,11 @@ dist-ssr
 *.sw?
 # 3WIJXDtnmQT3jPSS
 # duperTech
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Playwright
+test-results
+playwright-report

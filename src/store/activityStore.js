@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const useActivityStore = create((set, get) => ({
+const useActivityStore = create((set) => ({
   activities: [],
   currentActivity: null,
   isLoading: false,

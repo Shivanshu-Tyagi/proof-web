@@ -1,6 +1,6 @@
-import { afterEach } from 'vitest';
+import '@testing-library/jest-dom/vitest';
+import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
-import 'jsdom-global/register'; // Polyfill for navigator.clipboard
 
 // runs cleanup after each test case (e.g., clearing jsdom)
 afterEach(() => {

@@ -1,0 +1,29 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports: ['27017:27017']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: web
+      # The browser tests start the API from ../backend; point this at your backend repo
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/backend
+          path: backend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+        working-directory: backend
+      - run: npm ci
+        working-directory: web
+      - run: npm run lint && npx vitest run && npm run build
+        working-directory: web
+      - run: npx playwright install --with-deps chromium && npm run test:e2e
+        working-directory: web
