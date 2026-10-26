@@ -41,6 +41,7 @@ const RelationshipSettings = lazy(() => import('./pages/RelationshipSettings'));
 const History = lazy(() => import('./pages/History'));
 const Messages = lazy(() => import('./pages/Messages'));
 const Landing = lazy(() => import('./pages/Landing'));
+const Feedback = lazy(() => import('./pages/Feedback'));
 const Connect = lazy(() => import('./pages/Connect'));
 
 const RedirectTo = ({ to }) => <Navigate to={to(useParams())} replace />;
@@ -100,6 +101,12 @@ function App() {
               </ProtectedRoute>
             } />
             
+            <Route path="/feedback" element={
+              <ProtectedRoute>
+                <Feedback />
+              </ProtectedRoute>
+            } />
+
             <Route path="/messages" element={
               <ProtectedRoute>
                 <Messages />

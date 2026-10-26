@@ -171,6 +171,7 @@ const Dashboard = () => {
             <ul className="space-y-1">
               {[
                 { to: '/certificates', label: 'Certificates' },
+                { to: '/feedback', label: 'Give feedback' },
                 { to: '/milestones/create', label: 'New milestone' },
                 { to: '/terms/create', label: 'New agreement' },
                 { to: '/activities/create', label: 'Add a moment' },

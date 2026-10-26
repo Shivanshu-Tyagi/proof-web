@@ -41,6 +41,17 @@ const SECTIONS = [
     ],
   },
   {
+    heading: 'Feedback and suggestions',
+    paragraphs: ['The Feedback page is the one place that is not private between two people: what you post there can be read by everyone who is signed in to Twogether.'],
+    items: [
+      'A post shows its title, your details and your first name. Tick “Hide my name” and it shows “Anonymous”. Your email address and last name are never shown.',
+      'Please do not put private details about yourself or anyone else in a post.',
+      'Anyone signed in can add a “Me too”. Their name is not shown on the post, only how many people said it.',
+      'You can remove your own posts at any time. If you delete your account, your posts and your “Me too” are removed, and your posts are included in your data download.',
+      'The people who run Twogether may reply to a post, and can remove posts that break the terms.',
+    ],
+  },
+  {
     heading: 'Who else handles your data',
     paragraphs: ['We use hosting and database providers to run the service, and an email provider to send messages such as password resets. They process data on our behalf and only to provide those services. We may disclose information if the law requires it.'],
   },

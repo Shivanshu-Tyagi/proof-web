@@ -5,15 +5,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import useNotificationStore from '../store/notificationStore';
 import { Avatar } from '../components/Avatar';
-
-const timeAgo = (value) => {
-  const seconds = Math.floor((Date.now() - new Date(value)) / 1000);
-  if (seconds < 60) return 'Just now';
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h`;
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d`;
-  return new Date(value).toLocaleDateString();
-};
+import { timeAgo } from '../utils/timeAgo';
 
 // The buttons on a request come from the server as web addresses of the form /relationships/<id>/<action>.
 // Those are server actions, not pages, so opening them shows "page not found". Accept and decline are done right here instead.

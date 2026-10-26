@@ -1,4 +1,4 @@
-import { Home, Users, Award, Bell, User, FileText, Target, Activity, MessagesSquare } from 'lucide-react';
+import { Home, Users, Award, Bell, User, FileText, Target, Activity, MessagesSquare, MessageSquarePlus } from 'lucide-react';
 
 // Five top-level places, so the labels fit on a phone. Agreements, milestones and moments live inside each relationship.
 export const mainNav = [
@@ -15,6 +15,7 @@ export const sharedNav = [
   { to: '/terms', label: 'Agreements', icon: FileText, match: ['/terms'] },
   { to: '/milestones', label: 'Milestones', icon: Target, match: ['/milestones'] },
   { to: '/activities', label: 'Moments', icon: Activity, match: ['/activities'] },
+  { to: '/feedback', label: 'Feedback', icon: MessageSquarePlus, match: ['/feedback'] },
 ];
 
 export const isActivePath = (pathname, item) =>

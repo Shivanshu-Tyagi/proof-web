@@ -27,7 +27,7 @@ test('every page renders for both people in a relationship', async ({ browser, r
     '/milestones', '/milestones/create', `/milestones/${milestone._id}`,
     '/activities', '/activities/create', `/activities/${activity._id}`,
     '/certificates', `/certificates/${certificate._id}`, `/certificates/${certificate._id}/display`,
-    '/messages', '/messages/${relId}', '/notifications', '/profile', '/profile?tab=privacy', '/profile?tab=security', '/privacy-policy', '/terms-and-conditions', '/contact-us',
+    '/messages', '/feedback', '/messages/${relId}', '/notifications', '/profile', '/profile?tab=privacy', '/profile?tab=security', '/privacy-policy', '/terms-and-conditions', '/contact-us',
   ];
 
   for (const user of [alice, bob]) {
