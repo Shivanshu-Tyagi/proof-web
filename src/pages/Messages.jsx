@@ -1,13 +1,15 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUp, ChevronRight, MessagesSquare } from 'lucide-react';
 import useMessageStore from '../store/messageStore';
 import { Avatar } from '../components/Avatar';
 import { formatMessageTime } from '../utils/format';
 import { groupMessages } from '../utils/messages';
+import usePolling from '../utils/usePolling';
 
 const MAX_LENGTH = 1000;
-const POLL_MS = 5000;
+const POLL_FAST_MS = 5000; // while the conversation is lively
+const POLL_SLOW_MS = 30000; // after it has been quiet for a while
 
 const person = (other) => ({ ...other, _id: other?.id });
 
@@ -136,13 +138,17 @@ const Thread = ({ id }) => {
   useEffect(() => {
     lastId.current = null;
     openThread(id).then((r) => { if (r.success) markRead(id); });
-    const timer = setInterval(async () => {
-      if (document.hidden) return;
-      await openThread(id, { quiet: true });
-      loadThreads();
-    }, POLL_MS);
-    return () => clearInterval(timer);
-  }, [id, openThread, loadThreads, markRead]);
+  }, [id, openThread, markRead]);
+
+  // Looks for new messages. It pauses in a background tab and slows down while the conversation is quiet.
+  const refresh = useCallback(async () => {
+    const lastOf = () => useMessageStore.getState().thread?.messages?.at(-1)?.id;
+    const before = lastOf();
+    await openThread(id, { quiet: true });
+    loadThreads();
+    return lastOf() !== before;
+  }, [id, openThread, loadThreads]);
+  const polling = usePolling(refresh, { base: POLL_FAST_MS, max: POLL_SLOW_MS, immediate: false });
 
   const messages = thread?.relationship?.id === id ? thread.messages : [];
   const newest = messages[messages.length - 1];
@@ -160,6 +166,7 @@ const Thread = ({ id }) => {
     setSendError(null);
     const result = await sendMessage(id, value);
     if (!result.success && !result.ignored) setSendError(result.error);
+    if (result.success) polling.reset(); // a reply is likely soon, so check often again
     return result.success;
   };
 

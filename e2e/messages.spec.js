@@ -30,8 +30,9 @@ test.describe('messages between two people', () => {
     await bobPage.getByLabel(/^Message /).fill('Hi Alice');
     await bobPage.getByRole('button', { name: 'Send message' }).click();
 
-    // Alice's open conversation picks the reply up without a reload
-    await expect(alicePage.getByRole('list', { name: 'Messages' }).getByText('Hi Alice')).toBeVisible({ timeout: 15_000 });
+    // Alice's open conversation picks the reply up without a reload. A quiet conversation is checked
+    // less often (at most every 30 seconds), hence the longer wait.
+    await expect(alicePage.getByRole('list', { name: 'Messages' }).getByText('Hi Alice')).toBeVisible({ timeout: 35_000 });
 
     // Someone outside the relationship cannot read or write
     const peek = await request.get(`${API}/messages/${relId}`, { headers: authHeader(eve) });

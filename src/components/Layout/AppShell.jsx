@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TabBar from './TabBar';
 import useAuthStore from '../../store/authStore';
 import useNotificationStore from '../../store/notificationStore';
 import useMessageStore from '../../store/messageStore';
+import usePolling from '../../utils/usePolling';
 
 // Signed-in: sidebar on laptop, tab bar on phone. Signed-out pages bring their own layout.
 const AppShell = ({ children }) => {
@@ -14,13 +15,14 @@ const AppShell = ({ children }) => {
   const { unreadTotal, loadThreads } = useMessageStore();
   const { pathname } = useLocation();
 
-  useEffect(() => {
-    if (!signedIn) return undefined;
-    getUnreadCount();
-    loadThreads();
-    const timer = setInterval(() => { getUnreadCount(); loadThreads(); }, 30_000);
-    return () => clearInterval(timer);
-  }, [signedIn, getUnreadCount, loadThreads]);
+  // Checks for new notifications and messages. It pauses in background tabs and slows down while nothing is new.
+  const checkForNews = useCallback(async () => {
+    const snapshot = () => `${useNotificationStore.getState().unreadCount}|${useMessageStore.getState().unreadTotal}`;
+    const before = snapshot();
+    await Promise.all([getUnreadCount(), loadThreads()]);
+    return snapshot() !== before;
+  }, [getUnreadCount, loadThreads]);
+  usePolling(checkForNews, { enabled: signedIn, base: 30_000, max: 120_000 });
 
   // The landing page has its own header and footer
   if (!signedIn && pathname === '/') return children;

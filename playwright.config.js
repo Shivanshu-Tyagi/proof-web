@@ -30,6 +30,8 @@ export default defineConfig({
         FRONTEND_URL: `http://localhost:${WEB_PORT}`,
         JWT_SECRET: 'e2e_secret',
         API_RATE_LIMIT_MAX: '1000000',
+        USER_RATE_LIMIT_MAX: '1000000',
+        LOGIN_FAILURE_LIMIT: '100000',
         AUTH_RATE_LIMIT_MAX: '100000', // the suite signs up and logs in far more than a person would
       },
     },
