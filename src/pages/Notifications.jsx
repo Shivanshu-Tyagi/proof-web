@@ -69,9 +69,12 @@ const Notifications = () => {
       await markAsRead(n._id);
       getNotifications();
     } catch (error) {
-      toast.error(error.response?.data?.message ?? 'Could not do that. Please try again.');
-      // Already answered somewhere else, or no longer possible: stop offering it
-      if (error.response && error.response.status < 500) { setAnswered((prev) => new Set(prev).add(n._id)); getNotifications(); }
+      const status = error.response?.status;
+      // 400, 404 or 409 here means the request is no longer open: answered on another page or device, or withdrawn
+      const outOfDate = status === 400 || status === 404 || status === 409;
+      toast.error(outOfDate ? 'That request has already been answered.' : (error.response?.data?.message ?? 'Could not do that. Please try again.'));
+      // Stop offering it
+      if (status && status < 500) { setAnswered((prev) => new Set(prev).add(n._id)); getNotifications(); }
     } finally {
       setBusy(null);
     }

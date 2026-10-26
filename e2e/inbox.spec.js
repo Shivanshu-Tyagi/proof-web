@@ -51,6 +51,39 @@ test.describe('answering requests from the Inbox', () => {
     await expect(page.getByRole('button', { name: 'Accept' })).toHaveCount(0);
   });
 
+  test('accepting on the People page leaves nothing to accept in the Inbox', async ({ page, request }) => {
+    const alice = await signupViaApi(request, newUser('inbox'));
+    const bob = await signupViaApi(request, newUser('inbox'));
+    await invite(request, alice, bob, 'People pair');
+
+    await loginViaUi(page, bob);
+    await page.goto('/relationships');
+    await page.getByRole('button', { name: 'Accept' }).first().click();
+    await expect(page.getByText('Relationship accepted successfully!').first()).toBeVisible();
+
+    await page.goto('/notifications');
+    await expect(page.getByText('New Relationship Invitation')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Accept' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Decline' })).toHaveCount(0);
+  });
+
+  test('an Inbox page left open while the invitation was answered elsewhere explains itself', async ({ page, request }) => {
+    const alice = await signupViaApi(request, newUser('inbox'));
+    const bob = await signupViaApi(request, newUser('inbox'));
+    const id = await invite(request, alice, bob, 'Stale pair');
+
+    await loginViaUi(page, bob);
+    await page.goto('/notifications');
+    await expect(page.getByRole('button', { name: 'Accept' })).toBeVisible();
+
+    // Answered on another device, while this page still shows the buttons
+    await request.post(`${API}/relationships/${id}/accept`, { headers: authHeader(bob) });
+    await page.getByRole('button', { name: 'Accept' }).click();
+    await expect(page.getByText('That request has already been answered.').first()).toBeVisible();
+    await expect(page.getByText(/not pending/i)).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Accept' })).toHaveCount(0);
+  });
+
   test('a request to change what you are to each other reaches the Inbox and can be accepted there', async ({ page, request }) => {
     const alice = await signupViaApi(request, newUser('inbox'));
     const bob = await signupViaApi(request, newUser('inbox'));
