@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, CheckCheck, Trash2 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 import useNotificationStore from '../store/notificationStore';
 import { Avatar } from '../components/Avatar';
 
@@ -14,6 +15,17 @@ const timeAgo = (value) => {
   return new Date(value).toLocaleDateString();
 };
 
+// The buttons on a request come from the server as web addresses of the form /relationships/<id>/<action>.
+// Those are server actions, not pages, so opening them shows "page not found". Accept and decline are done right here instead.
+const REPLY_ACTION = /^\/relationships\/[a-f0-9]{24}\/(accept|decline|accept-type-change|decline-type-change)$/;
+const BREAKUP_ACTION = /^\/relationships\/([a-f0-9]{24})\/(confirm-breakup|cancel-breakup-request)$/;
+const DONE_TEXT = {
+  accept: 'Invitation accepted',
+  decline: 'Invitation declined',
+  'accept-type-change': 'Change accepted',
+  'decline-type-change': 'Change declined',
+};
+
 const FILTERS = [
   ['all', 'All'],
   ['needs', 'Needs you'],
@@ -23,6 +35,8 @@ const FILTERS = [
 const Notifications = () => {
   const { notifications = [], unreadCount, getNotifications, markAsRead, markAllAsRead, deleteNotification, isLoading } = useNotificationStore();
   const [filter, setFilter] = useState('all');
+  const [busy, setBusy] = useState(null); // the notification being answered
+  const [answered, setAnswered] = useState(() => new Set()); // answered here, so its buttons go away at once
 
   useEffect(() => {
     getNotifications();
@@ -43,6 +57,24 @@ const Notifications = () => {
   const onReadAll = async () => {
     const result = await markAllAsRead();
     if (result?.success) toast.success('All notifications marked as read');
+  };
+
+  const reply = async (n, action) => {
+    if (busy) return;
+    setBusy(n._id);
+    try {
+      await axios.post(action.url);
+      toast.success(DONE_TEXT[action.url.split('/').pop()] ?? 'Done');
+      setAnswered((prev) => new Set(prev).add(n._id));
+      await markAsRead(n._id);
+      getNotifications();
+    } catch (error) {
+      toast.error(error.response?.data?.message ?? 'Could not do that. Please try again.');
+      // Already answered somewhere else, or no longer possible: stop offering it
+      if (error.response && error.response.status < 500) { setAnswered((prev) => new Set(prev).add(n._id)); getNotifications(); }
+    } finally {
+      setBusy(null);
+    }
   };
 
   const onDelete = async (id) => {
@@ -83,7 +115,10 @@ const Notifications = () => {
       <ul className="divide-y divide-gray-200 dark:divide-gray-700">
         {shown.map((n) => {
           const unread = n.status === 'unread';
-          const actions = n.actionRequired ? (n.actions ?? []) : [];
+          const requested = n.actionRequired && !answered.has(n._id) ? (n.actions ?? []) : [];
+          const breakup = requested.map((a) => a.url.match(BREAKUP_ACTION)).find(Boolean);
+          // Ending a relationship has its own screen with the full choice, so send people there
+          const actions = breakup ? [] : requested;
           const fallback = n.metadata?.relationshipId?._id ? `/relationships/${n.metadata.relationshipId._id}` : null;
           return (
             <li key={n._id} className="flex gap-3 py-4">
@@ -104,10 +139,15 @@ const Notifications = () => {
                 <p className="mt-0.5 text-sm leading-snug text-gray-600 dark:text-gray-400">{n.message}</p>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {actions.map((a, i) => (
+                  {actions.map((a, i) => (REPLY_ACTION.test(a.url) ? (
+                    <button key={`${a.type}-${i}`} type="button" disabled={busy === n._id} onClick={() => reply(n, a)} className={`btn btn-sm ${i === 0 ? 'btn-primary' : 'btn-secondary'}`}>
+                      {busy === n._id ? 'Working…' : a.label}
+                    </button>
+                  ) : (
                     <Link key={`${a.type}-${i}`} to={a.url} onClick={() => unread && onRead(n._id)} className={`btn btn-sm ${i === 0 ? 'btn-primary' : 'btn-secondary'}`}>{a.label}</Link>
-                  ))}
-                  {actions.length === 0 && fallback && <Link to={fallback} onClick={() => unread && onRead(n._id)} className="btn btn-secondary btn-sm">Open</Link>}
+                  )))}
+                  {breakup && <Link to={`/relationships/${breakup[1]}`} onClick={() => unread && onRead(n._id)} className="btn btn-primary btn-sm">Review request</Link>}
+                  {actions.length === 0 && !breakup && fallback && <Link to={fallback} onClick={() => unread && onRead(n._id)} className="btn btn-secondary btn-sm">Open</Link>}
                   {unread && <button type="button" onClick={() => onRead(n._id)} className="btn btn-ghost btn-sm">Mark read</button>}
                   <button type="button" onClick={() => onDelete(n._id)} className="btn btn-ghost btn-sm" aria-label="Delete notification"><Trash2 className="h-4 w-4" aria-hidden="true" /></button>
                 </div>
