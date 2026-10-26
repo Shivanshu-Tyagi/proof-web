@@ -7,6 +7,7 @@ import useAuthStore from '../store/authStore';
 import { Avatar } from '../components/Avatar';
 import { TYPE_LABELS } from '../utils/relationships';
 import { debounce } from '../utils/debounce';
+import ShareLink from '../components/ShareLink';
 import FieldError from '../components/FieldError';
 import useFormErrors from '../utils/useFormErrors';
 
@@ -117,6 +118,14 @@ const InviteRelationship = () => {
       <h1 className="page-title">Who is it with?</h1>
       <p className="page-sub mb-6 mt-1">They get a request and decide. Nothing is public.</p>
 
+      {!locked && (
+        <section aria-label="Send your invite link" className="card-soft mb-6 p-4">
+          <p className="font-extrabold">Do not have their ID? Send them your link instead.</p>
+          <p className="mb-3 mt-0.5 text-sm text-gray-600 dark:text-gray-400">They open it, sign up, and the request to connect with you is ready for them.</p>
+          <ShareLink user={user} />
+        </section>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         {locked ? (
           <div>
@@ -169,6 +178,7 @@ const InviteRelationship = () => {
             )}
           </div>
           <FieldError name="partnerIdentifier" errors={errors} />
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Only know their name? <Link to="/find-someone" className="font-bold text-rose-700 underline dark:text-rose-300">Search by name</Link>.</p>
           {searchError && <p role="alert" className="mt-2 text-sm font-bold text-rose-700 dark:text-rose-300">{searchError}</p>}
 
 

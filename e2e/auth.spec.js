@@ -16,7 +16,8 @@ test.describe('authentication', () => {
 
     await expect(page).toHaveURL(/\/dashboard/);
     await expect(page.getByRole('heading', { name: new RegExp(`Good (morning|afternoon|evening), ${user.firstName}`) })).toBeVisible();
-    await expect(page.getByText('Your Registration ID', { exact: true })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Get started in three steps' })).toBeVisible();
+    await expect(page.getByLabel('Your invite link')).toContainText('/connect/');
   });
 
   test('rejects a wrong password and accepts the right one', async ({ page, request }) => {

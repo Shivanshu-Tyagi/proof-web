@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import useAuthStore from './store/authStore';
 import useThemeStore from './store/themeStore';
 import { lazy, Suspense, useEffect } from 'react';
+import axios from 'axios';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages load on demand to keep the first download small
@@ -40,6 +41,7 @@ const RelationshipSettings = lazy(() => import('./pages/RelationshipSettings'));
 const History = lazy(() => import('./pages/History'));
 const Messages = lazy(() => import('./pages/Messages'));
 const Landing = lazy(() => import('./pages/Landing'));
+const Connect = lazy(() => import('./pages/Connect'));
 
 const RedirectTo = ({ to }) => <Navigate to={to(useParams())} replace />;
 
@@ -55,6 +57,11 @@ function App() {
       getMe();
     }
   }, [isAuthenticated, getMe, setInitialTheme]);
+
+  // The free server sleeps when quiet. Waking it as soon as the site opens means it is usually ready by the time someone signs up.
+  useEffect(() => {
+    axios.get('/health', { timeout: 65000 }).catch(() => {});
+  }, []);
 
   return (
 //  <ListRendering/>
@@ -84,6 +91,7 @@ function App() {
             />
             
             <Route path="/verify/:number" element={<VerifyCertificate />} />
+            <Route path="/connect/:registrationId" element={<Connect />} />
 
             {/* Protected routes */}
             <Route path="/dashboard" element={

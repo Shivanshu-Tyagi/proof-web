@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'react-toastify';
-import useRelationshipStore from '../store/relationshipStore';
+import useActiveRelationships from '../utils/useActiveRelationships';
+import NeedsRelationship from '../components/NeedsRelationship';
 import useActivityStore from '../store/activityStore';
 import RelationshipPicker from '../components/RelationshipPicker';
 import FieldError from '../components/FieldError';
@@ -20,13 +21,8 @@ const MOODS = [
 const CreateActivity = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { relationships, getRelationships } = useRelationshipStore();
+  const { relationships, loaded, hasActive } = useActiveRelationships();
   const { createActivity, isLoading } = useActivityStore();
-
-  // Direct visits (for example from a link) have not loaded the list yet
-  useEffect(() => {
-    getRelationships();
-  }, [getRelationships]);
 
   const [formData, setFormData] = useState({
     relationshipId: searchParams.get('relationshipId') || '',
@@ -64,6 +60,8 @@ const CreateActivity = () => {
       toast.error(result.error || 'Failed to add the moment');
     }
   };
+
+  if (loaded && !hasActive) return <NeedsRelationship back="/activities" backLabel="Moments" what="A moment" />;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-5 pb-10 pt-6 md:px-10 md:pt-8">

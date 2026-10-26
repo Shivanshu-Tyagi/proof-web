@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'react-toastify';
-import useRelationshipStore from '../store/relationshipStore';
+import useActiveRelationships from '../utils/useActiveRelationships';
+import NeedsRelationship from '../components/NeedsRelationship';
 import useTermStore from '../store/termStore';
 import RelationshipPicker from '../components/RelationshipPicker';
 import FieldError from '../components/FieldError';
@@ -29,13 +30,8 @@ const PRIORITIES = [
 const CreateTerm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { relationships, getRelationships } = useRelationshipStore();
+  const { relationships, loaded, hasActive } = useActiveRelationships();
   const { createTerm, isLoading } = useTermStore();
-
-  // Direct visits (for example from a link) have not loaded the list yet
-  useEffect(() => {
-    getRelationships();
-  }, [getRelationships]);
 
   const [formData, setFormData] = useState({
     relationshipId: searchParams.get('relationshipId') || '',
@@ -71,6 +67,8 @@ const CreateTerm = () => {
       toast.error(result.error || 'Failed to create agreement');
     }
   };
+
+  if (loaded && !hasActive) return <NeedsRelationship back="/terms" backLabel="Agreements" what="An agreement" />;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-5 pb-10 pt-6 md:px-10 md:pt-8">

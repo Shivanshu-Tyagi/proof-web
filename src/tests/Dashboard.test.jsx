@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
@@ -75,50 +75,41 @@ describe('Dashboard', () => {
     vi.clearAllMocks();
   });
 
-  it("should display the user's registration ID", () => {
-    render(
-      <Router>
-        <Dashboard />
-      </Router>
-    );
+  const link = () => `${window.location.origin}/connect/${mockUser.registrationId}`;
+  const renderDashboard = () => render(<Router><Dashboard /></Router>);
 
-    expect(screen.getByText(/Your Registration ID/i)).toBeInTheDocument();
+  it('shows the invite link and the Registration ID', () => {
+    renderDashboard();
+    expect(screen.getByLabelText('Your invite link')).toHaveTextContent(link());
     expect(screen.getByText(mockUser.registrationId)).toBeInTheDocument();
   });
 
-  it('should copy the registration ID to clipboard when button is clicked', async () => {
-    render(
-      <Router>
-        <Dashboard />
-      </Router>
-    );
-
-    const copyButton = screen.getByTitle('Copy Registration ID');
-    await fireEvent.click(copyButton);
-
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockUser.registrationId);
-    expect(toast.success).toHaveBeenCalledWith('Registration ID copied to clipboard!');
+  it('copies the invite link when Copy link is pressed', async () => {
+    renderDashboard();
+    fireEvent.click(screen.getByRole('button', { name: /copy link/i }));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Invite link copied'));
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(link());
   });
 
-  it('should show an error toast if copying to clipboard fails', async () => {
-    navigator.clipboard.writeText.mockImplementationOnce(() => {
-      throw new Error('Failed to copy');
-    });
-
-    render(
-      <Router>
-        <Dashboard />
-      </Router>
-    );
-
-    const copyButton = screen.getByTitle('Copy Registration ID');
-    await fireEvent.click(copyButton);
-
+  it('copies the Registration ID when it is pressed', async () => {
+    renderDashboard();
+    fireEvent.click(screen.getByRole('button', { name: `Copy Registration ID ${mockUser.registrationId}` }));
+    await waitFor(() => expect(toast.success).toHaveBeenCalledWith('Registration ID copied'));
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockUser.registrationId);
-    expect(toast.error).toHaveBeenCalledWith('Failed to copy Registration ID.');
+  });
+
+  it('shows an error toast if copying fails', async () => {
+    navigator.clipboard.writeText.mockImplementationOnce(() => { throw new Error('Failed to copy'); });
+    renderDashboard();
+    fireEvent.click(screen.getByRole('button', { name: /copy link/i }));
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Could not copy. Select the text and copy it by hand.'));
+  });
+
+  it('shows a get-started guide to someone with no relationships yet', () => {
+    useRelationshipStore.mockReturnValue({ relationships: [], getRelationships: vi.fn(), isLoading: false });
+    renderDashboard();
+    expect(screen.getByRole('heading', { name: 'Get started in three steps' })).toBeInTheDocument();
+    expect(screen.getByText('Welcome to Proof. Three steps and you are set up.')).toBeInTheDocument();
+    expect(screen.getAllByLabelText('Your invite link')).toHaveLength(1);
   });
 });
-
-
-
-

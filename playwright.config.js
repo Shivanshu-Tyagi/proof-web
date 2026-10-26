@@ -29,6 +29,8 @@ export default defineConfig({
         MONGO_URI: 'mongodb://localhost:27017/relationshipapp_e2e',
         FRONTEND_URL: `http://localhost:${WEB_PORT}`,
         JWT_SECRET: 'e2e_secret',
+        API_RATE_LIMIT_MAX: '1000000',
+        AUTH_RATE_LIMIT_MAX: '100000', // the suite signs up and logs in far more than a person would
       },
     },
     {

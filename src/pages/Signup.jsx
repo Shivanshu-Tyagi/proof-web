@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import useAuthStore from '../store/authStore';
 import AuthLayout from '../components/AuthLayout';
 import PasswordInput from '../components/PasswordInput';
 import FieldError from '../components/FieldError';
+import SlowHint from '../components/SlowHint';
 import useFormErrors from '../utils/useFormErrors';
 
 const Field = ({ id, label, error, ...props }) => (
@@ -26,13 +27,15 @@ const Signup = () => {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/dashboard'; // an invite link sends people back to it after sign-up
   const { signup, isLoading, error, clearError, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     if (isAuthenticated()) {
-      navigate('/dashboard', { replace: true });
+      navigate(from, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, from]);
 
   useEffect(() => {
     if (error) {
@@ -75,7 +78,7 @@ const Signup = () => {
     if (result.success) {
       const currentUser = useAuthStore.getState().user;
       toast.success(`Account created. Your Registration ID is ${currentUser.registrationId || 'ready on your home screen'}.`);
-      navigate('/dashboard', { replace: true });
+      navigate(from, { replace: true });
     }
   };
 
@@ -107,6 +110,7 @@ const Signup = () => {
         <button type="submit" disabled={isLoading} className="btn btn-primary btn-lg w-full">
           {isLoading ? 'Creating account…' : 'Create account'}
         </button>
+        <SlowHint active={isLoading} />
       </form>
     </AuthLayout>
   );

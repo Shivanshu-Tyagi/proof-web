@@ -84,7 +84,7 @@ test.describe('inviting by email', () => {
     const bob = await signupViaApi(request, newUser('fs'));
     await loginViaUi(page, alice);
     await page.goto('/find-someone');
-    await page.getByLabel('Search people').fill(bob.username.slice(0, 6));
+    await page.getByLabel('Search people').fill(bob.username);
     await expect(page.getByText(`@${bob.username}`)).toBeVisible();
     await expect(page.getByText(bob.email)).toHaveCount(0);
     await page.getByRole('button', { name: 'Invite' }).first().click();

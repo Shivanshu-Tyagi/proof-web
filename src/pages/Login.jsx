@@ -5,6 +5,7 @@ import useAuthStore from '../store/authStore';
 import AuthLayout from '../components/AuthLayout';
 import PasswordInput from '../components/PasswordInput';
 import FieldError from '../components/FieldError';
+import SlowHint from '../components/SlowHint';
 import useFormErrors from '../utils/useFormErrors';
 
 const Login = () => {
@@ -95,6 +96,7 @@ const Login = () => {
         <button type="submit" disabled={isLoading} className="btn btn-primary btn-lg w-full">
           {isLoading ? 'Signing in…' : 'Sign in'}
         </button>
+        <SlowHint active={isLoading} />
       </form>
     </AuthLayout>
   );

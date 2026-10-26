@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, ChevronRight, Clock, Copy, Lock, Plus, Search, Users } from 'lucide-react';
+import { Bell, ChevronRight, Clock, Lock, Plus, Users } from 'lucide-react';
 import { toast } from 'react-toastify';
+import ShareLink from '../components/ShareLink';
 import useAuthStore from '../store/authStore';
 import useRelationshipStore from '../store/relationshipStore';
 import Scene from '../components/Scene';
@@ -27,17 +28,8 @@ const Dashboard = () => {
 
   const needs = attentionItems(relationships, user?.id);
   const visible = relationships.filter((r) => ['active', 'pending', 'requested_breakup'].includes(r.status));
-
-  const handleCopyRegistrationId = async () => {
-    if (!user?.registrationId) return;
-    try {
-      await navigator.clipboard.writeText(user.registrationId);
-      toast.success('Registration ID copied to clipboard!');
-    } catch (err) {
-      toast.error('Failed to copy Registration ID.');
-      console.error('Failed to copy: ', err);
-    }
-  };
+  // Nothing yet: the page becomes a short guide instead of a list of empty boxes
+  const isNew = !isLoading && relationships.length === 0;
 
   const respondToInvite = async (id, accept) => {
     const result = accept ? await acceptRelationship(id) : await declineRelationship(id);
@@ -57,16 +49,15 @@ const Dashboard = () => {
           <p className="page-sub mt-1">
             {needs.length > 0
               ? `${needs.length} ${needs.length === 1 ? 'thing needs' : 'things need'} you. Everything else is up to date.`
-              : 'You are all caught up.'}
+              : isNew ? 'Welcome to Proof. Three steps and you are set up.' : 'You are all caught up.'}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link to="/find-someone" className="btn btn-secondary"><Search className="h-4 w-4" aria-hidden="true" />Find someone</Link>
           <Link to="/relationships/invite" className="btn btn-primary"><Plus className="h-4 w-4" aria-hidden="true" />Invite someone</Link>
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="space-y-8">
           {needs.length > 0 && (
             <section aria-labelledby="needs-heading">
@@ -114,13 +105,33 @@ const Dashboard = () => {
             {isLoading && visible.length === 0 ? (
               <p className="text-gray-600 dark:text-gray-400">Loading…</p>
             ) : visible.length === 0 ? (
-              <div className="card overflow-hidden">
-                <Scene seed="empty" className="h-40" />
-                <div className="p-6">
-                  <h3 className="text-xl">Start with one person</h3>
-                  <p className="page-sub mb-4 mt-1">Invite a friend, family member or partner. You agree on what matters, and both confirm it.</p>
-                  <Link to="/relationships/invite" className="btn btn-primary btn-lg">Invite someone</Link>
-                </div>
+              <div className="card p-5 sm:p-6">
+                <h3 className="text-xl">Get started in three steps</h3>
+                <ol className="mt-4 space-y-5">
+                  <li className="flex gap-4">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-500 font-extrabold text-white" aria-hidden="true">1</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-extrabold">Send your invite link to someone you trust</p>
+                      <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">They open it, create an account in about a minute, and send you a request.</p>
+                      <ShareLink user={user} />
+                    </div>
+                  </li>
+                  <li className="flex gap-4">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 font-extrabold text-gray-700 dark:bg-gray-700 dark:text-gray-200" aria-hidden="true">2</span>
+                    <div>
+                      <p className="font-extrabold">Accept their request</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">It appears here under “Needs you”. Or invite someone yourself with their Registration ID or email.</p>
+                      <Link to="/relationships/invite" className="mt-2 inline-flex min-h-[44px] items-center text-sm font-bold text-rose-700 underline dark:text-rose-300">Invite someone directly</Link>
+                    </div>
+                  </li>
+                  <li className="flex gap-4">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 font-extrabold text-gray-700 dark:bg-gray-700 dark:text-gray-200" aria-hidden="true">3</span>
+                    <div>
+                      <p className="font-extrabold">Write your first agreement together</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Something you both expect, like “call every Sunday”. It counts once you both tap Agree.</p>
+                    </div>
+                  </li>
+                </ol>
               </div>
             ) : (
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -148,16 +159,10 @@ const Dashboard = () => {
         </div>
 
         <aside className="space-y-5">
-          {user?.registrationId && (
-            <section aria-label="Registration ID" className="card p-5">
-              <p className="eyebrow">Your Registration ID</p>
-              <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-gray-50 py-2 pl-4 pr-2 dark:bg-gray-900">
-                <span className="mono text-lg">{user.registrationId}</span>
-                <button type="button" onClick={handleCopyRegistrationId} title="Copy Registration ID" aria-label="Copy Registration ID" className="btn btn-secondary btn-icon">
-                  <Copy className="h-[18px] w-[18px]" aria-hidden="true" />
-                </button>
-              </div>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">Share it so someone can invite you without needing your email.</p>
+          {!isNew && user?.registrationId && (
+            <section aria-label="Invite link" className="card p-5">
+              <p className="eyebrow mb-3">Invite someone</p>
+              <ShareLink user={user} />
             </section>
           )}
 
@@ -165,6 +170,7 @@ const Dashboard = () => {
             <h2 className="mb-3 text-base">Shortcuts</h2>
             <ul className="space-y-1">
               {[
+                { to: '/certificates', label: 'Certificates' },
                 { to: '/milestones/create', label: 'New milestone' },
                 { to: '/terms/create', label: 'New agreement' },
                 { to: '/activities/create', label: 'Add a moment' },

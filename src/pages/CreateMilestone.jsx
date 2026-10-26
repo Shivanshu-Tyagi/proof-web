@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'react-toastify';
-import useRelationshipStore from '../store/relationshipStore';
+import useActiveRelationships from '../utils/useActiveRelationships';
+import NeedsRelationship from '../components/NeedsRelationship';
 import useMilestoneStore from '../store/milestoneStore';
 import RelationshipPicker from '../components/RelationshipPicker';
 import FieldError from '../components/FieldError';
@@ -29,13 +30,8 @@ const DIFFICULTIES = [
 const CreateMilestone = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { relationships, getRelationships } = useRelationshipStore();
+  const { relationships, loaded, hasActive } = useActiveRelationships();
   const { createMilestone, isLoading } = useMilestoneStore();
-
-  // Direct visits (for example from a link) have not loaded the list yet
-  useEffect(() => {
-    getRelationships();
-  }, [getRelationships]);
 
   const [formData, setFormData] = useState({
     relationshipId: searchParams.get('relationshipId') || '',
@@ -74,6 +70,8 @@ const CreateMilestone = () => {
       toast.error(result.error || 'Failed to create milestone');
     }
   };
+
+  if (loaded && !hasActive) return <NeedsRelationship back="/milestones" backLabel="Milestones" what="A milestone" />;
 
   return (
     <div className="mx-auto w-full max-w-2xl px-5 pb-10 pt-6 md:px-10 md:pt-8">
