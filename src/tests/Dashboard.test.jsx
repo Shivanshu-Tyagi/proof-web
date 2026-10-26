@@ -109,7 +109,7 @@ describe('Dashboard', () => {
     useRelationshipStore.mockReturnValue({ relationships: [], getRelationships: vi.fn(), isLoading: false });
     renderDashboard();
     expect(screen.getByRole('heading', { name: 'Get started in three steps' })).toBeInTheDocument();
-    expect(screen.getByText('Welcome to Proof. Three steps and you are set up.')).toBeInTheDocument();
+    expect(screen.getByText('Welcome to Twogether. Three steps and you are set up.')).toBeInTheDocument();
     expect(screen.getAllByLabelText('Your invite link')).toHaveLength(1);
   });
 });

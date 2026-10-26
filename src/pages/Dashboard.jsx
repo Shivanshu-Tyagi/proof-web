@@ -49,7 +49,7 @@ const Dashboard = () => {
           <p className="page-sub mt-1">
             {needs.length > 0
               ? `${needs.length} ${needs.length === 1 ? 'thing needs' : 'things need'} you. Everything else is up to date.`
-              : isNew ? 'Welcome to Proof. Three steps and you are set up.' : 'You are all caught up.'}
+              : isNew ? 'Welcome to Twogether. Three steps and you are set up.' : 'You are all caught up.'}
           </p>
         </div>
         <div className="flex items-center gap-2">

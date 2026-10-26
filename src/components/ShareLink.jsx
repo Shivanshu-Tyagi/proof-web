@@ -19,7 +19,7 @@ const ShareLink = ({ user }) => {
 
   const share = async () => {
     try {
-      await navigator.share({ title: 'Connect with me on Proof', text: `${user.firstName} invited you to Proof, a private space for two.`, url: link });
+      await navigator.share({ title: 'Connect with me on Twogether', text: `${user.firstName} invited you to Twogether, a private space for two.`, url: link });
     } catch { /* dismissed */ }
   };
 

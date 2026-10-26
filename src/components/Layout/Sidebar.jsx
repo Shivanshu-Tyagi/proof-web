@@ -27,7 +27,7 @@ const Sidebar = ({ badges = {} }) => {
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col gap-6 border-r border-gray-200 bg-white px-4 py-6 dark:border-gray-700 dark:bg-gray-900 md:flex">
-      <Link to="/dashboard" className="px-2" aria-label="Proof home">
+      <Link to="/dashboard" className="px-2" aria-label="Twogether home">
         <Brand />
       </Link>
 

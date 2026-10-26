@@ -172,7 +172,7 @@ const useAuthStore = create(
           const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/json' }));
           const link = document.createElement('a');
           link.href = url;
-          link.download = `proof-data-${new Date().toISOString().slice(0, 10)}.json`;
+          link.download = `twogether-data-${new Date().toISOString().slice(0, 10)}.json`;
           document.body.appendChild(link);
           link.click();
           link.remove();

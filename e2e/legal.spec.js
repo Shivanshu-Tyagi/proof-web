@@ -6,7 +6,7 @@ test.describe('privacy and terms pages', () => {
     await page.goto('/privacy-policy');
     await expect(page.getByRole('heading', { level: 1, name: 'Privacy Policy' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Get started' })).toBeVisible();
-    await expect(page.getByText('Last updated 23 October 2026')).toBeVisible();
+    await expect(page.getByText('Last updated 26 October 2026')).toBeVisible();
 
     // Jump chips go to their section
     await page.getByRole('navigation', { name: 'On this page' }).getByRole('link', { name: /Messages/ }).click();

@@ -25,7 +25,7 @@ const VerifyCertificate = () => {
 
   return (
     <div className="mx-auto flex min-h-[80vh] w-full max-w-3xl flex-col justify-center gap-6 px-5 py-10">
-      <Link to="/" className="self-center" aria-label="Proof home"><Brand /></Link>
+      <Link to="/" className="self-center" aria-label="Twogether home"><Brand /></Link>
 
       {status === 'loading' && <p className="text-center text-gray-600 dark:text-gray-400">Checking…</p>}
 

@@ -9,7 +9,7 @@ import Scene from '../components/Scene';
 import useThemeStore from '../store/themeStore';
 
 const NAV = [
-  ['what', 'What is Proof?'],
+  ['what', 'What is Twogether?'],
   ['example', 'See an example'],
   ['how', 'How it works'],
   ['words', 'Words we use'],
@@ -80,7 +80,7 @@ const PRIVACY = [
 ];
 
 const FAQ = [
-  ['Do I have to invite someone to use it?', 'Yes. Proof is built for two people, so you start by inviting one person. Until they accept, there is nothing to fill in. You can invite more people later, one relationship each.'],
+  ['Do I have to invite someone to use it?', 'Yes. Twogether is built for two people, so you start by inviting one person. Until they accept, there is nothing to fill in. You can invite more people later, one relationship each.'],
   ['What if the other person does not accept?', 'Nothing happens. The invite stays waiting, and nothing is shared. They can also decline, and nobody else is told.'],
   ['Can other people see what we write?', 'No. Agreements, milestones, moments and messages are visible only to the two of you. The one optional exception is a certificate link that you switch on yourself, which shows just names, level and date.'],
   ['Can I use it with more than one person?', 'Yes. Each person gets their own private relationship, so your flatmate and your best friend never see each other’s space.'],
@@ -180,7 +180,7 @@ const Landing = () => {
 
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 px-5 backdrop-blur dark:border-gray-700 dark:bg-gray-900/90 md:px-10">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-4">
-          <Link to="/" aria-label="Proof home"><Brand /></Link>
+          <Link to="/" aria-label="Twogether home"><Brand /></Link>
           <nav aria-label="Page sections" className="ml-6 hidden items-center gap-1 lg:flex">
             {NAV.map(([id, label]) => (
               <a key={id} href={`#${id}`} className="rounded-lg px-3 py-2 text-sm font-bold text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">{label}</a>
@@ -225,7 +225,7 @@ const Landing = () => {
         </section>
 
         {/* What is it */}
-        <Section id="what" eyebrow="What is Proof?" title="Think of it as a shared notebook that you both have to sign" intro="Here is the whole idea in three steps." className="bg-gray-50 dark:bg-gray-800/40">
+        <Section id="what" eyebrow="What is Twogether?" title="Think of it as a shared notebook that you both have to sign" intro="Here is the whole idea in three steps." className="bg-gray-50 dark:bg-gray-800/40">
           <ol className="grid gap-5 md:grid-cols-3">
             {IDEA.map((it, i) => {
               const Icon = it.icon;
@@ -290,7 +290,7 @@ const Landing = () => {
         </Section>
 
         {/* What it is not */}
-        <Section eyebrow="Good to know" title="What Proof is not" intro="So there are no surprises." className="bg-gray-50 dark:bg-gray-800/40">
+        <Section eyebrow="Good to know" title="What Twogether is not" intro="So there are no surprises." className="bg-gray-50 dark:bg-gray-800/40">
           <div className="grid gap-5 md:grid-cols-3">
             {NOT.map((n) => (
               <div key={n.title} className="card p-6">

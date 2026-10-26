@@ -2,8 +2,8 @@ import LegalPage from '../components/LegalPage';
 
 const SECTIONS = [
   {
-    heading: 'Using Proof',
-    paragraphs: ['By creating an account or using Proof you agree to these terms. If you do not agree, please do not use the service. You must be old enough to enter an agreement where you live, and the details you give us must be accurate.'],
+    heading: 'Using Twogether',
+    paragraphs: ['By creating an account or using Twogether you agree to these terms. If you do not agree, please do not use the service. You must be old enough to enter an agreement where you live, and the details you give us must be accurate.'],
   },
   {
     heading: 'Your account',
@@ -16,7 +16,7 @@ const SECTIONS = [
   {
     heading: 'What a record or certificate is',
     paragraphs: [
-      'Proof records what you and another person chose to agree to inside the app, and when. A certificate is a keepsake showing that record.',
+      'Twogether records what you and another person chose to agree to inside the app, and when. A certificate is a keepsake showing that record.',
       'It is not a legal, government, notarised or official document. It does not create, prove or end any legal status such as marriage, engagement or a contract, and it should not be treated as evidence of one.',
     ],
   },
@@ -31,7 +31,7 @@ const SECTIONS = [
   },
   {
     heading: 'Be decent',
-    paragraphs: ['Do not use Proof, including its messages, to harass, threaten, deceive or pressure anyone, to share anything unlawful, or to try to break or overload the service. We may limit or close accounts that do.'],
+    paragraphs: ['Do not use Twogether, including its messages, to harass, threaten, deceive or pressure anyone, to share anything unlawful, or to try to break or overload the service. We may limit or close accounts that do.'],
   },
   {
     heading: 'Your content',
@@ -39,15 +39,15 @@ const SECTIONS = [
   },
   {
     heading: 'The service as it is',
-    paragraphs: ['We work to keep Proof available and accurate, but we provide it “as is”. We cannot promise it will always be uninterrupted or error free, and to the extent the law allows we are not liable for indirect or consequential loss arising from using it. Nothing in these terms limits rights you have by law that cannot be limited.'],
+    paragraphs: ['We work to keep Twogether available and accurate, but we provide it “as is”. We cannot promise it will always be uninterrupted or error free, and to the extent the law allows we are not liable for indirect or consequential loss arising from using it. Nothing in these terms limits rights you have by law that cannot be limited.'],
   },
   {
     heading: 'Ending your use',
-    paragraphs: ['You can stop using Proof at any time, and delete your account yourself under You, then Security. We may suspend or close accounts that break these terms.'],
+    paragraphs: ['You can stop using Twogether at any time, and delete your account yourself under You, then Security. We may suspend or close accounts that break these terms.'],
   },
   {
     heading: 'Changes',
-    paragraphs: ['We may update these terms as the service changes. If a change matters, we will tell you in the app first. Continuing to use Proof afterwards means you accept the new terms.'],
+    paragraphs: ['We may update these terms as the service changes. If a change matters, we will tell you in the app first. Continuing to use Twogether afterwards means you accept the new terms.'],
   },
 ];
 
@@ -56,7 +56,7 @@ const TermsAndConditions = () => (
     title="Terms and Conditions"
     path="/terms-and-conditions"
     intro="The short version: be honest, look after your account, and remember that a certificate here is a keepsake, not a legal document."
-    updated="23 October 2026"
+    updated="26 October 2026"
     sections={SECTIONS}
   />
 );

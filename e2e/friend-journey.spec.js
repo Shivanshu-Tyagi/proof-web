@@ -17,7 +17,7 @@ test.describe('a friend joins through an invite link', () => {
     const friendCtx = await browser.newContext();
     const friend = await friendCtx.newPage();
     await friend.goto(link);
-    await expect(friend.getByRole('heading', { name: 'Alice invited you to Proof' })).toBeVisible();
+    await expect(friend.getByRole('heading', { name: 'Alice invited you to Twogether' })).toBeVisible();
     await expect(friend.getByText('Only the two of you can see it. Nothing is public.')).toBeVisible();
 
     // They sign up, and land on a request that is already addressed to Alice

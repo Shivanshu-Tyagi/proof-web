@@ -26,7 +26,7 @@ const LegalPage = ({ title, path, intro, updated, sections }) => {
       {!signedIn && (
         <header className="border-b border-gray-200 px-5 dark:border-gray-700 md:px-8">
           <div className="mx-auto flex h-16 max-w-2xl items-center justify-between gap-3">
-            <Link to="/" aria-label="Proof home"><Brand /></Link>
+            <Link to="/" aria-label="Twogether home"><Brand /></Link>
             <div className="flex items-center gap-2">
               <Link to="/login" className="btn btn-ghost btn-sm sm:min-h-[44px] sm:text-sm">Sign in</Link>
               <Link to="/signup" className="btn btn-primary btn-sm sm:min-h-[44px] sm:text-sm">Get started</Link>

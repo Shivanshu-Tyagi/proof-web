@@ -94,7 +94,7 @@ test.describe('your data', () => {
       page.waitForEvent('download'),
       page.getByRole('button', { name: 'Download my data' }).click(),
     ]);
-    expect(download.suggestedFilename()).toMatch(/^proof-data-\d{4}-\d{2}-\d{2}\.json$/);
+    expect(download.suggestedFilename()).toMatch(/^twogether-data-\d{4}-\d{2}-\d{2}\.json$/);
     const fs = await import('node:fs/promises');
     const data = JSON.parse(await fs.readFile(await download.path(), 'utf8'));
     expect(data.profile.email).toBe(user.email);

@@ -69,8 +69,8 @@ const PrivacyPolicy = () => (
   <LegalPage
     title="Privacy Policy"
     path="/privacy-policy"
-    intro="Proof keeps a private record between you and the people you choose. This explains what we collect, who can see it, and what you control."
-    updated="23 October 2026"
+    intro="Twogether keeps a private record between you and the people you choose. This explains what we collect, who can see it, and what you control."
+    updated="26 October 2026"
     sections={SECTIONS}
   />
 );

@@ -1,4 +1,4 @@
-# Relationship Proof: web app
+# Twogether: web app
 
 React + Vite + Tailwind front end. See the [root README](../README.md) for setup, Docker and deployment.
 

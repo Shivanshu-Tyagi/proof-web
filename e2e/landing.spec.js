@@ -5,7 +5,7 @@ test.describe('landing page', () => {
   test('explains the idea in plain words and leads to sign up and sign in', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('A private notebook for two people.');
-    for (const name of ['What is Proof?', 'See an example', 'How it works', 'Words we use', 'Questions']) {
+    for (const name of ['What is Twogether?', 'See an example', 'How it works', 'Words we use', 'Questions']) {
       await expect(page.getByText(name, { exact: true }).first()).toBeVisible();
     }
 
@@ -20,7 +20,7 @@ test.describe('landing page', () => {
     await expect(page.getByRole('heading', { name: 'Create your account', level: 3 })).toBeVisible();
     await expect(page.getByText('Registration ID', { exact: true }).first()).toBeVisible();
     await page.getByText('Do I have to invite someone to use it?').click();
-    await expect(page.getByText(/Proof is built for two people/)).toBeVisible();
+    await expect(page.getByText(/Twogether is built for two people/)).toBeVisible();
 
     await page.getByRole('link', { name: 'Create your account' }).first().click();
     await expect(page).toHaveURL(/\/signup/);
